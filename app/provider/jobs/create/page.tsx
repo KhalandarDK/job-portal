@@ -8,8 +8,7 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { useState } from "react";
-import { PlusCircle, ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { PlusCircle } from "lucide-react";
 
 export default function CreateJobPage() {
   const [loading, setLoading] = useState(false);
@@ -24,72 +23,88 @@ export default function CreateJobPage() {
   };
 
   return (
-    <DashboardLayout
-      role="provider"
-      institutionName="Masjid Al-Noor"
-      notificationCount={4}
-    >
-      <div className="mx-auto">
-        <div className="mb-8">
-          {/* <Link href="/provider/jobs" className="inline-flex items-center gap-2 text-textSecondary hover:text-textPrimary mb-4">
-            <ArrowLeft className="w-4 h-4" /> Back to My Jobs
-          </Link> */}
-          <h1 className="text-3xl font-bold text-textPrimary">Post a New Job</h1>
-          <p className="text-textSecondary mt-1">Reach dedicated professionals in the community</p>
+    <DashboardLayout role="provider" institutionName="Masjid Al-Noor" notificationCount={4}>
+      <div>
+
+        {/* Header */}
+        <div className="mb-4 sm:mb-6">
+          <h1 className="text-lg sm:text-2xl font-bold text-slate-900">Post a New Job</h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
+            Reach dedicated professionals in the community
+          </p>
         </div>
 
-        <Card className="p-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="grid md:grid-cols-2 gap-6">
-              <Input label="Job Title" placeholder="e.g. Imam" required />
+        <Card className="p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+
+            {/* Title + Category */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <Input label="Job Title"  placeholder="e.g. Imam"     required />
               <Select
                 label="Category"
                 options={[
-                  { value: "religious", label: "Religious Roles" },
-                  { value: "education", label: "Education & Teaching" },
+                  { value: "religious",      label: "Religious Roles" },
+                  { value: "education",      label: "Education & Teaching" },
                   { value: "administration", label: "Administration" },
-                  { value: "support", label: "Support Staff" },
+                  { value: "support",        label: "Support Staff" },
                 ]}
               />
             </div>
 
+            {/* Role */}
             <Input label="Role / Position" placeholder="e.g. Senior Imam" required />
 
-            <div className="grid md:grid-cols-3 gap-6">
+            {/* Salary + Location */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <Input label="Monthly Salary" placeholder="₹45,000" required />
-              <Input label="City" placeholder="Mumbai" required />
-              <Input label="State" placeholder="Maharashtra" required />
+              <Input label="City"           placeholder="Mumbai"       required />
+              <Input label="State"          placeholder="Maharashtra"  required />
             </div>
 
+            {/* Description */}
             <Textarea
               label="Job Description"
               placeholder="Describe the role, responsibilities, and what you're looking for..."
-              rows={5}
+              rows={4}
               required
             />
 
-            <div className="grid md:grid-cols-2 gap-6">
+            {/* Exp + Edu */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <Input label="Experience Required" placeholder="3+ years" />
-              <Input label="Education Required" placeholder="Hafiz / Studies" />
+              <Input label="Education Required"  placeholder="Hafiz / Alim" />
             </div>
 
-            <div className="space-y-4">
-              <Checkbox label="Accommodation Provided" defaultChecked />
-              <Checkbox label="Food Provided" />
-              <Checkbox label="Transportation Allowance" />
+            {/* Joining + Vacancies */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <Input label="Expected Joining Date" type="date" />
+              <Input label="Number of Vacancies"   type="number" placeholder="1" />
             </div>
 
-            <div className="pt-6 border-t">
-              <Button 
-                type="submit" 
-                fullWidth 
-                size="lg" 
+            {/* Amenities */}
+            <div>
+              <p className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
+                Benefits Provided
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-1">
+                <Checkbox label="Accommodation" defaultChecked />
+                <Checkbox label="Food Provided" />
+                <Checkbox label="Transport Allowance" />
+              </div>
+            </div>
+
+            {/* Submit */}
+            <div className="pt-3 sm:pt-4 border-t border-slate-100">
+              <Button
+                type="submit"
+                fullWidth
+                size="md"
                 loading={loading}
-                leftIcon={<PlusCircle className="w-5 h-5" />}
+                leftIcon={<PlusCircle className="w-4 h-4" />}
               >
                 Post Job Now
               </Button>
-              <p className="text-center text-xs text-textSecondary mt-4">
+              <p className="text-center text-[11px] text-slate-400 mt-3">
                 Your job will be reviewed and published within 24 hours
               </p>
             </div>

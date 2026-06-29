@@ -54,8 +54,6 @@ export function JobFilters({ onFilter, className }: JobFiltersProps) {
         onChange={(e) => update("country", e.target.value)}
         options={[
           { value: "india", label: "India" },
-          { value: "pakistan", label: "Pakistan" },
-          { value: "bangladesh", label: "Bangladesh" },
           { value: "uae", label: "UAE" },
           { value: "saudi-arabia", label: "Saudi Arabia" },
         ]}

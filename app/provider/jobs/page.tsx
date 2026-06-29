@@ -3,124 +3,203 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Badge, StatusBadge } from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/Badge";
 import { SearchBar } from "@/components/ui/SearchBar";
-import { Tabs } from "@/components/ui/Tabs";
 import { mockJobs } from "@/lib/mockData";
-import { Eye, Trash2, PlusCircle, ToggleLeft, ToggleRight } from "lucide-react";
+import { Eye, Trash2, PlusCircle, ToggleLeft, ToggleRight, Users } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "@/lib/dateUtils";
+import { cn } from "@/lib/utils";
 
-const tabs = [
-  { id: "all", label: "All Jobs", count: mockJobs.length },
-  { id: "active", label: "Active", count: mockJobs.filter(j => j.status === "active").length },
+const TABS = [
+  { id: "all",    label: "All",    count: mockJobs.length },
+  { id: "active", label: "Active", count: mockJobs.filter((j) => j.status === "active").length },
   { id: "closed", label: "Closed", count: 2 },
 ];
 
 export default function ProviderJobsPage() {
   const [activeTab, setActiveTab] = useState("all");
-  const [jobs, setJobs] = useState(mockJobs);
+  const [search,    setSearch]    = useState("");
+  const [jobs,      setJobs]      = useState(mockJobs);
 
-  const filtered = activeTab === "all" 
-    ? jobs 
-    : jobs.filter(j => j.status === activeTab);
+  const filtered = jobs.filter((j) => {
+    const matchesTab    = activeTab === "all" || j.status === activeTab;
+    const matchesSearch =
+      !search || j.title.toLowerCase().includes(search.toLowerCase());
+    return matchesTab && matchesSearch;
+  });
 
-  const toggleStatus = (id: string) => {
-    setJobs(prev => prev.map(job => 
-      job.id === id 
-        ? { ...job, status: job.status === "active" ? "closed" : "active" } 
-        : job
-    ));
-  };
+  const toggleStatus = (id: string) =>
+    setJobs((prev) =>
+      prev.map((j) =>
+        j.id === id ? { ...j, status: j.status === "active" ? "closed" : "active" } : j
+      )
+    );
 
   return (
-    <DashboardLayout
-      role="provider"
-      institutionName="Masjid Al-Noor"
-      notificationCount={4}
-    >
-      <div className="mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
+    <DashboardLayout role="provider" institutionName="Masjid Al-Noor" notificationCount={4}>
+      <div>
+
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-textPrimary">My Job Postings</h1>
-            <p className="text-textSecondary mt-1">Manage all your active and past opportunities</p>
+            <h1 className="text-lg sm:text-2xl font-bold text-slate-900">My Job Postings</h1>
+            <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
+              {filtered.length} jobs
+            </p>
           </div>
-          
           <Link href="/provider/jobs/create">
-            <Button leftIcon={<PlusCircle className="w-4 h-4" />} size="lg">
-              Post New Job
+            <Button size="sm" leftIcon={<PlusCircle className="w-3.5 h-3.5" />}>
+              Post Job
             </Button>
           </Link>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <SearchBar placeholder="Search your jobs..." className="flex-1" />
-          <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
+        {/* Search + tabs */}
+        <div className="mb-3">
+          <SearchBar
+            placeholder="Search jobs..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
 
-        <Card padding="none">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-border bg-slate-50">
-                <tr className="text-left text-xs text-textSecondary uppercase tracking-wider">
-                  <th className="px-6 py-4 font-medium">Job Title</th>
-                  <th className="px-6 py-4 font-medium hidden md:table-cell">Category</th>
-                  <th className="px-6 py-4 font-medium hidden sm:table-cell">Posted</th>
-                  <th className="px-6 py-4 font-medium">Status</th>
-                  <th className="px-6 py-4 font-medium text-center">Applications</th>
-                  <th className="px-6 py-4 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filtered.map((job) => (
-                  <tr key={job.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-5">
-                      <div>
-                        <p className="font-medium text-textPrimary">{job.title}</p>
-                        <p className="text-sm text-textSecondary">{job.city}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 text-sm text-textSecondary hidden md:table-cell">
-                      {job.categoryId}
-                    </td>
-                    <td className="px-6 py-5 text-sm text-textSecondary hidden sm:table-cell">
-                      {formatDistanceToNow(job.createdAt)}
-                    </td>
-                    <td className="px-6 py-5">
-                      <StatusBadge status={job.status} />
-                    </td>
-                    <td className="px-6 py-5 text-center font-medium">
-                      {job.applicationsCount || 0}
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link href={`/jobs/${job.id}`}>
-                          <Button variant="ghost" size="icon">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </Link>
-                        
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => toggleStatus(job.id)}
-                          className={job.status === "active" ? "text-emerald-600" : ""}
-                        >
-                          {job.status === "active" ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
-                        </Button>
+        <div className="flex gap-1.5 overflow-x-auto pb-1 mb-4 scrollbar-none">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "flex-shrink-0 flex items-center gap-1 px-3 h-8 rounded-lg text-xs font-medium transition-all whitespace-nowrap",
+                activeTab === tab.id
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-slate-600 border border-slate-200"
+              )}
+            >
+              {tab.label}
+              <span className={cn(
+                "text-[10px] px-1.5 py-0.5 rounded-full font-semibold min-w-[18px] text-center",
+                activeTab === tab.id ? "bg-white/25 text-white" : "bg-slate-100 text-slate-500"
+              )}>
+                {tab.count}
+              </span>
+            </button>
+          ))}
+        </div>
 
-                        <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-50">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </td>
+        {/* ── Desktop: table ── */}
+        <div className="hidden sm:block">
+          <Card className="overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b border-slate-100 bg-slate-50">
+                  <tr className="text-left text-[11px] text-slate-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 font-semibold">Job Title</th>
+                    <th className="px-4 py-3 font-semibold hidden md:table-cell">Category</th>
+                    <th className="px-4 py-3 font-semibold">Posted</th>
+                    <th className="px-4 py-3 font-semibold">Status</th>
+                    <th className="px-4 py-3 font-semibold text-center">Apps</th>
+                    <th className="px-4 py-3 font-semibold text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filtered.map((job) => (
+                    <tr key={job.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-4 py-3.5">
+                        <p className="font-semibold text-xs sm:text-sm text-slate-900">{job.title}</p>
+                        <p className="text-[11px] text-slate-500">{job.city}</p>
+                      </td>
+                      <td className="px-4 py-3.5 text-xs text-slate-500 hidden md:table-cell capitalize">
+                        {job.categoryId}
+                      </td>
+                      <td className="px-4 py-3.5 text-xs text-slate-500">
+                        {formatDistanceToNow(job.createdAt)}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <Badge variant={job.status === "active" ? "success" : "default"}>
+                          {job.status}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3.5 text-center text-xs font-semibold text-slate-700">
+                        {job.applicationsCount || 0}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center justify-end gap-1">
+                          <Link href={`/jobs/${job.id}`}>
+                            <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors">
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                          </Link>
+                          <button
+                            onClick={() => toggleStatus(job.id)}
+                            className={cn(
+                              "p-1.5 rounded-lg transition-colors",
+                              job.status === "active"
+                                ? "text-emerald-600 hover:bg-emerald-50"
+                                : "text-slate-400 hover:bg-slate-100"
+                            )}
+                          >
+                            {job.status === "active"
+                              ? <ToggleRight className="w-4 h-4" />
+                              : <ToggleLeft  className="w-4 h-4" />
+                            }
+                          </button>
+                          <button className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 transition-colors">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
+
+        {/* ── Mobile: card list ── */}
+        <div className="sm:hidden space-y-2">
+          {filtered.map((job) => (
+            <Card key={job.id} className="p-3">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-sm text-slate-900 truncate">{job.title}</h3>
+                  <p className="text-[11px] text-slate-500 mt-0.5">{job.city} · {formatDistanceToNow(job.createdAt)}</p>
+                </div>
+                <Badge variant={job.status === "active" ? "success" : "default"}>
+                  {job.status}
+                </Badge>
+              </div>
+
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-3">
+                <Users className="w-3 h-3" />
+                <span>{job.applicationsCount || 0} applicants</span>
+              </div>
+
+              <div className="flex items-center gap-2 pt-2.5 border-t border-slate-100">
+                <Link href={`/jobs/${job.id}`} className="flex-1">
+                  <Button variant="outline" size="sm" fullWidth leftIcon={<Eye className="w-3.5 h-3.5" />}>
+                    View
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleStatus(job.id)}
+                  className={cn(
+                    job.status === "active" ? "text-emerald-600 border-emerald-200" : "text-slate-500"
+                  )}
+                >
+                  {job.status === "active" ? "Pause" : "Activate"}
+                </Button>
+                <button className="p-2 rounded-lg hover:bg-red-50 text-red-400 border border-slate-200 transition-colors">
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
     </DashboardLayout>
   );

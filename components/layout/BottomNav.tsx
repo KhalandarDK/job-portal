@@ -23,7 +23,7 @@ const providerNav = [
 
 interface BottomNavProps {
   role: "seeker" | "provider";
-  notificationCount: number;
+  notificationCount: number; 
 }
 
 export function BottomNav({ role, notificationCount }: BottomNavProps) {

@@ -6,91 +6,98 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { useState } from "react";
+import { Settings, Bell, Shield } from "lucide-react";
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState({
-    maintenanceMode: false,
+    maintenanceMode:    false,
     emailNotifications: true,
-    autoVerify: false,
+    autoVerify:         false,
   });
+
+  const toggle = (key: keyof typeof settings) =>
+    setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
 
   return (
     <DashboardLayout role="admin" userName="Super Admin">
-      <div className="mx-auto">
-        <h1 className="text-3xl font-bold mb-2">Platform Settings</h1>
-        <p className="text-textSecondary mb-8">Configure global platform preferences</p>
+      <div>
+        <div className="mb-4 sm:mb-6">
+          <h1 className="text-lg sm:text-2xl font-bold text-slate-900">Platform Settings</h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Configure global platform preferences</p>
+        </div>
 
-        <div className="space-y-8">
-          {/* General Settings */}
+        <div className="space-y-3 sm:space-y-5">
+
+          {/* General */}
           <Card>
-            <div className="p-6 border-b">
-              <h2 className="font-semibold text-lg">General Settings</h2>
+            <div className="px-3 sm:px-5 py-3 border-b border-slate-100 flex items-center gap-2">
+              <Settings className="w-4 h-4 text-slate-500" />
+              <h2 className="font-semibold text-xs sm:text-sm text-slate-900">General Settings</h2>
             </div>
-            <div className="p-6 space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Maintenance Mode</p>
-                  <p className="text-sm text-textSecondary">Temporarily disable the platform for users</p>
+            <div className="p-3 sm:p-5 space-y-3">
+
+              {/* Maintenance toggle */}
+              <div className="flex items-center justify-between py-1 gap-4">
+                <div className="min-w-0">
+                  <p className="font-medium text-xs sm:text-sm text-slate-800">Maintenance Mode</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Temporarily disable for users</p>
                 </div>
                 <Switch
                   checked={settings.maintenanceMode}
-                  onCheckedChange={(checked) => setSettings(prev => ({ ...prev, maintenanceMode: checked }))}
+                  onCheckedChange={() => toggle("maintenanceMode")}
                 />
               </div>
 
-              <Input label="Platform Name" defaultValue="Jobs" />
-              <Input label="Support Email" defaultValue="support@jobs.com" type="email" />
+              <div className="space-y-3 pt-2 border-t border-slate-100">
+                <Input label="Platform Name"  defaultValue="Jobs" />
+                <Input label="Support Email"  defaultValue="support@jobs.com" type="email" />
+              </div>
             </div>
           </Card>
 
-          {/* Notification Settings */}
+          {/* Notifications */}
           <Card>
-            <div className="p-6 border-b">
-              <h2 className="font-semibold text-lg">Notifications</h2>
+            <div className="px-3 sm:px-5 py-3 border-b border-slate-100 flex items-center gap-2">
+              <Bell className="w-4 h-4 text-slate-500" />
+              <h2 className="font-semibold text-xs sm:text-sm text-slate-900">Notifications</h2>
             </div>
-            <div className="p-6 space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Email Notifications</p>
-                  <p className="text-sm text-textSecondary">Send system alerts to administrators</p>
+            <div className="divide-y divide-slate-100">
+              {[
+                { key: "emailNotifications" as const, title: "Email Notifications", desc: "System alerts to administrators" },
+                { key: "autoVerify"         as const, title: "Auto-Verify Institutions", desc: "Automatically verify trusted institutions" },
+              ].map(({ key, title, desc }) => (
+                <div key={key} className="flex items-center justify-between px-3 sm:px-5 py-3 gap-4">
+                  <div className="min-w-0">
+                    <p className="font-medium text-xs sm:text-sm text-slate-800">{title}</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">{desc}</p>
+                  </div>
+                  <Switch checked={settings[key]} onCheckedChange={() => toggle(key)} />
                 </div>
-                <Switch
-                  checked={settings.emailNotifications}
-                  onCheckedChange={(checked) => setSettings(prev => ({ ...prev, emailNotifications: checked }))}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Auto-Verify Institutions</p>
-                  <p className="text-sm text-textSecondary">Automatically verify trusted institutions</p>
-                </div>
-                <Switch
-                  checked={settings.autoVerify}
-                  onCheckedChange={(checked) => setSettings(prev => ({ ...prev, autoVerify: checked }))}
-                />
-              </div>
+              ))}
             </div>
           </Card>
 
           {/* Security */}
           <Card>
-            <div className="p-6 border-b">
-              <h2 className="font-semibold text-lg">Security</h2>
+            <div className="px-3 sm:px-5 py-3 border-b border-slate-100 flex items-center gap-2">
+              <Shield className="w-4 h-4 text-slate-500" />
+              <h2 className="font-semibold text-xs sm:text-sm text-slate-900">Security</h2>
             </div>
-            <div className="p-6">
-              <Button variant="outline" className="w-full justify-start mb-3">
+            <div className="p-3 sm:p-5 space-y-2">
+              <Button variant="outline" size="sm" className="w-full justify-start">
                 Change Admin Password
               </Button>
-              <Button variant="outline" className="w-full justify-start text-red-600 hover:bg-red-50">
+              <Button variant="outline" size="sm" className="w-full justify-start text-red-600 hover:bg-red-50 border-red-100">
                 Export Platform Data
               </Button>
             </div>
           </Card>
         </div>
 
-        <div className="mt-10 flex justify-end">
-          <Button size="lg">Save All Settings</Button>
+        <div className="mt-4 sm:mt-6">
+          <Button size="sm" className="w-full sm:w-auto sm:float-right">
+            Save All Settings
+          </Button>
         </div>
       </div>
     </DashboardLayout>

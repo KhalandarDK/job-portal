@@ -4,10 +4,11 @@ import { Search } from "lucide-react";
 import { InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-interface SearchBarProps extends InputHTMLAttributes<HTMLInputElement> {
+interface SearchBarProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   placeholder?: string;
   showButton?: boolean;
-  inputSize?: "default" | "lg";
+  size?: "default" | "lg";
 }
 export function SearchBar({
   placeholder = "Search...",

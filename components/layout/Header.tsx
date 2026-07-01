@@ -4,14 +4,20 @@ import { Bell, Menu, Search } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 
 interface HeaderProps {
-  role: "seeker" | "provider" | "admin";
+  role?: "seeker" | "provider" | "admin";
   userName?: string;
   institutionName?: string;
-  notificationCount: number;
-  onMenuClick: () => void;
+  notificationCount?: number;
+  onMenuClick?: () => void;
 }
 
-export function Header({ role, userName, institutionName, notificationCount, onMenuClick }: HeaderProps) {
+export function Header({
+  role = "seeker",
+  userName,
+  institutionName,
+  notificationCount = 0,
+  onMenuClick = () => {},
+}: HeaderProps) {
   const displayName = userName || institutionName || "User";
 
   return (

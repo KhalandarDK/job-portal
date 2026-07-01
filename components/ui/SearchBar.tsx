@@ -7,13 +7,12 @@ import { cn } from "@/lib/utils";
 interface SearchBarProps extends InputHTMLAttributes<HTMLInputElement> {
   placeholder?: string;
   showButton?: boolean;
-  size?: "default" | "lg";
+  inputSize?: "default" | "lg";
 }
-
 export function SearchBar({
   placeholder = "Search...",
   showButton = false,
-  size = "default",
+  inputSize = "default",
   className,
   value,
   onChange,
@@ -34,7 +33,7 @@ export function SearchBar({
           "text-sm placeholder:text-slate-400",
           "focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400",
           "transition-colors",
-          size === "lg" && "h-11 sm:h-10 text-base pl-10",
+          inputSize === "lg" && "h-11 sm:h-10 text-base pl-10",
           showButton && "pr-20 sm:pr-24",
         )}
         {...props}

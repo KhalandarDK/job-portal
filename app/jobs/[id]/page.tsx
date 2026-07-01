@@ -28,7 +28,12 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
-      <Header isLoggedIn userName="Ahmed Abdullah" />
+      <Header
+        role="seeker"
+        userName="Ahmed Abdullah"
+        notificationCount={0}
+        onMenuClick={() => { }}
+      />
 
       <div className="flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
 
